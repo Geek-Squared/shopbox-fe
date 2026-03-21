@@ -2,7 +2,7 @@
 
 client_id = "3ee224caadbeffa955f85cfefb366ee9"
 name = "shopbox"
-application_url = "https://grateful-unbefriended-lorrine.ngrok-free.dev/api/meta/auth/messenger/callback/api"
+application_url = "https://dose-injured-contribution-rehab.trycloudflare.com"
 embedded = true
 
 [build]
@@ -25,5 +25,5 @@ scopes = "read_customers,read_discounts,read_fulfillments,read_inventory,read_me
 
 [auth]
 redirect_urls = [
-  "https://grateful-unbefriended-lorrine.ngrok-free.dev/api/meta/auth/messenger/callback/api/shopify/auth/callback"
+  "https://grateful-unbefriended-lorrine.ngrok-free.dev/api/shopify/auth/callback"
 ]

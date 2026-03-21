@@ -1,64 +1,82 @@
-import { 
-  Page, 
-  Layout, 
-  Card, 
-  Button, 
-  DataTable, 
-  BlockStack, 
-  Text, 
-  Badge, 
-  InlineStack, 
-  Modal, 
-  TextField, 
-  Checkbox, 
-  FormLayout, 
-  EmptyState 
-} from "@shopify/polaris";
-import { useState } from "react";
-import { useLoaderData, useSubmit } from "react-router";
-import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
+import { Page, Layout, Card, Button, DataTable, BlockStack, Text, Badge, InlineStack, Modal, TextField, Checkbox, FormLayout, EmptyState } from "@shopify/polaris";
+import { useState, useEffect } from "react";
+import { useLoaderData } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
+import { useAppBridge } from "@shopify/app-bridge-react";
 
 const BACKEND_URL = "https://grateful-unbefriended-lorrine.ngrok-free.dev";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session } = await authenticate.admin(request);
-  
-  // Real implementation: call GET /api/meta/triggers with session token
-  // For the mockup, we return an empty list or placeholders
-  const triggers = [
-    ["SHOP", "ACTIVE", "1,240", "Yes"],
-    ["CATALOG", "ACTIVE", "842", "No"],
-    ["PRICE", "ACTIVE", "311", "Yes"]
-  ];
-  
-  return { triggers };
-};
-
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const { admin } = await authenticate.admin(request);
-  const formData = await request.formData();
-  
-  // Real implementation: call POST /api/meta/triggers
-  return { success: true };
+  return { shop: session.shop };
 };
 
 export default function Automation() {
-  const data = useLoaderData<typeof loader>();
-  const submit = useSubmit();
+  const { shop } = useLoaderData<typeof loader>();
+  const shopify = useAppBridge();
+
+  const [triggers, setTriggers] = useState<string[][]>([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [replyComment, setReplyComment] = useState(true);
 
-  const toggleModal = () => setIsModalOpen(!isModalOpen);
-
-  const handleAddTrigger = () => {
-    submit({ keyword, replyComment }, { method: "post" });
-    setIsModalOpen(false);
-    setKeyword("");
+  const fetchTriggers = async () => {
+    try {
+      const idToken = await shopify.idToken();
+      const res = await fetch(`${BACKEND_URL}/api/meta/triggers?shop=${shop}`, {
+        headers: {
+          "Authorization": `Bearer ${idToken}`,
+          "ngrok-skip-browser-warning": "true" 
+        }
+      });
+      const data = await res.json();
+      const formatted = data.map((t: any) => [
+        t.keyword, 
+        t.isActive ? "ACTIVE" : "INACTIVE", 
+        (t.messagesSent || 0).toString(), 
+        t.replyComment ? "Yes" : "No"
+      ]);
+      setTriggers(formatted);
+      setLoading(false);
+    } catch (err) {
+      console.error("Triggers load failed:", err);
+      setLoading(false);
+    }
   };
 
-  const rows = data.triggers;
+  useEffect(() => {
+    fetchTriggers();
+  }, [shopify, shop]);
+
+  const toggleModal = () => setIsModalOpen(!isModalOpen);
+
+  const handleAddTrigger = async () => {
+    try {
+      const idToken = await shopify.idToken();
+      const response = await fetch(`${BACKEND_URL}/api/meta/triggers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${idToken}`,
+          "ngrok-skip-browser-warning": "true" 
+        },
+        body: JSON.stringify({ keyword, replyComment })
+      });
+
+      if (response.ok) {
+        setIsModalOpen(false);
+        setKeyword("");
+        setReplyComment(true);
+        fetchTriggers();
+      }
+    } catch (err) {
+      console.error("Save failed:", err);
+    }
+  };
+
+  const rows = triggers;
 
   return (
     <Page 
@@ -79,11 +97,11 @@ export default function Automation() {
               />
             ) : (
               <EmptyState
-                heading="No triggers created yet"
-                action={{ content: "Create New Trigger", onAction: toggleModal }}
+                heading="You have 0 active keywords"
+                action={{ content: "Create Your First Keyword", onAction: toggleModal }}
                 image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
               >
-                <p>Add your first keyword to start automating customer interactions.</p>
+                <p>Add words like "CATALOG", "PRICE", or "SHOP" so the bot knows when to respond to your customers automatically.</p>
               </EmptyState>
             )}
           </Card>
