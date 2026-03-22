@@ -66,6 +66,50 @@ export default function Channels() {
     window.open(`${BACKEND_URL}/api/meta/auth/instagram?shop=${shop}`, "_blank");
   };
 
+  const disconnectMessenger = async () => {
+    try {
+      const idToken = await shopify.idToken();
+      const res = await fetch(`${BACKEND_URL}/api/meta/auth/messenger?shop=${shop}`, {
+        method: 'DELETE',
+        headers: {
+          "Authorization": `Bearer ${idToken}`,
+          "ngrok-skip-browser-warning": "true" 
+        }
+      });
+      if (res.ok) {
+        shopify.toast.show("Messenger disconnected successfully");
+        setData(prev => ({ ...prev, messengerConnected: false, messengerPageName: "" }));
+      } else {
+        shopify.toast.show("Failed to disconnect Messenger", { isError: true });
+      }
+    } catch (error) {
+      console.error("Disconnect error:", error);
+      shopify.toast.show("Error connecting to server", { isError: true });
+    }
+  };
+
+  const disconnectInstagram = async () => {
+    try {
+      const idToken = await shopify.idToken();
+      const res = await fetch(`${BACKEND_URL}/api/meta/auth/instagram?shop=${shop}`, {
+        method: 'DELETE',
+        headers: {
+          "Authorization": `Bearer ${idToken}`,
+          "ngrok-skip-browser-warning": "true" 
+        }
+      });
+      if (res.ok) {
+        shopify.toast.show("Instagram disconnected successfully");
+        setData(prev => ({ ...prev, instagramConnected: false, instagramUsername: "" }));
+      } else {
+        shopify.toast.show("Failed to disconnect Instagram", { isError: true });
+      }
+    } catch (error) {
+      console.error("Disconnect error:", error);
+      shopify.toast.show("Error connecting to server", { isError: true });
+    }
+  };
+
   return (
     <Page title="Messaging Channels">
       <Layout>
@@ -94,9 +138,16 @@ export default function Channels() {
               <Text as="p" tone="subdued">
                 Automate orders and support through your Facebook Business Page.
               </Text>
-              <Button onClick={connectMessenger} variant={messengerConnected ? "secondary" : "primary"}>
-                {messengerConnected ? "Reconnect Messenger" : "Connect Messenger"}
-              </Button>
+              <InlineStack gap="300">
+                <Button onClick={connectMessenger} variant={messengerConnected ? "secondary" : "primary"}>
+                  {messengerConnected ? "Reconnect Messenger" : "Connect Messenger"}
+                </Button>
+                {messengerConnected && (
+                  <Button onClick={disconnectMessenger} tone="critical" variant="secondary">
+                    Disconnect
+                  </Button>
+                )}
+              </InlineStack>
             </BlockStack>
           </Card>
         </Layout.Section>
@@ -118,9 +169,16 @@ export default function Channels() {
               <Text as="p" tone="subdued">
                 Turn your Instagram DMs into a fully automated shopping catalog.
               </Text>
-              <Button onClick={connectInstagram} variant={instagramConnected ? "secondary" : "primary"}>
-                {instagramConnected ? "Reconnect Instagram" : "Connect Instagram"}
-              </Button>
+              <InlineStack gap="300">
+                <Button onClick={connectInstagram} variant={instagramConnected ? "secondary" : "primary"}>
+                  {instagramConnected ? "Reconnect Instagram" : "Connect Instagram"}
+                </Button>
+                {instagramConnected && (
+                  <Button onClick={disconnectInstagram} tone="critical" variant="secondary">
+                    Disconnect
+                  </Button>
+                )}
+              </InlineStack>
             </BlockStack>
           </Card>
         </Layout.Section>
