@@ -1,6 +1,7 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import { AppProvider } from "@shopify/polaris";
 import "@shopify/polaris/build/esm/styles.css";
+import "./styles/shopbox.css";
 import enTranslations from "@shopify/polaris/locales/en.json";
 
 export default function App() {

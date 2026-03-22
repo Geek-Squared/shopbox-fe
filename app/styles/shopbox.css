@@ -1,0 +1,942 @@
+/* ============================================================
+   SHOPBOX — Brand Design System
+   Color Palette:
+     Primary:   #008060  (deep teal)
+     Secondary: #004C3F  (dark green)
+     Tertiary:  #20C997  (bright mint)
+     Neutral:   #616161  (gray)
+   ============================================================ */
+
+:root {
+  --shopbox-primary: #008060;
+  --shopbox-primary-light: #e6f5f0;
+  --shopbox-primary-hover: #006e52;
+  --shopbox-secondary: #004C3F;
+  --shopbox-tertiary: #20C997;
+  --shopbox-tertiary-light: #e8faf4;
+  --shopbox-neutral: #616161;
+  --shopbox-neutral-light: #f6f6f7;
+  --shopbox-neutral-border: #e3e3e3;
+  --shopbox-white: #ffffff;
+  --shopbox-text-dark: #1a1a1a;
+  --shopbox-text-body: #3d3d3d;
+  --shopbox-radius: 12px;
+  --shopbox-radius-sm: 8px;
+  --shopbox-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shopbox-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shopbox-transition: 0.2s ease;
+}
+
+/* ============================================================
+   Global Overrides (within Shopify iframe)
+   ============================================================ */
+
+/* Override Polaris primary button color */
+.Polaris-Button--variantPrimary {
+  --pc-button-bg: var(--shopbox-primary) !important;
+  --pc-button-bg_hover: var(--shopbox-primary-hover) !important;
+  --pc-button-bg_active: var(--shopbox-secondary) !important;
+  background: var(--shopbox-primary) !important;
+  border-color: var(--shopbox-primary) !important;
+}
+
+.Polaris-Button--variantPrimary:hover {
+  background: var(--shopbox-primary-hover) !important;
+  border-color: var(--shopbox-primary-hover) !important;
+}
+
+/* Override success badge tones */
+.Polaris-Badge--toneSuccess {
+  background: var(--shopbox-primary-light) !important;
+  color: var(--shopbox-primary) !important;
+}
+
+/* ============================================================
+   Stat Cards
+   ============================================================ */
+
+.shopbox-stat-card {
+  position: relative;
+  border-radius: var(--shopbox-radius-sm);
+  transition: box-shadow var(--shopbox-transition);
+}
+
+.shopbox-stat-card:hover {
+  box-shadow: var(--shopbox-shadow-card-hover);
+}
+
+.shopbox-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--shopbox-primary);
+  border-radius: var(--shopbox-radius-sm) var(--shopbox-radius-sm) 0 0;
+}
+
+.shopbox-stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--shopbox-neutral);
+}
+
+.shopbox-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--shopbox-text-dark);
+  line-height: 1.1;
+}
+
+/* ============================================================
+   Gradient Status Card
+   ============================================================ */
+
+.shopbox-gradient-card {
+  background: linear-gradient(135deg, var(--shopbox-primary) 0%, var(--shopbox-tertiary) 100%);
+  color: var(--shopbox-white);
+  border-radius: var(--shopbox-radius);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.shopbox-gradient-card::after {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+}
+
+.shopbox-gradient-card .shopbox-gradient-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  font-size: 22px;
+}
+
+.shopbox-gradient-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: var(--shopbox-white);
+}
+
+.shopbox-gradient-card p {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+/* ============================================================
+   Trigger / Automation Cards
+   ============================================================ */
+
+.shopbox-trigger-card {
+  background: var(--shopbox-white);
+  border: 1px solid var(--shopbox-neutral-border);
+  border-radius: var(--shopbox-radius);
+  padding: 20px;
+  transition: box-shadow var(--shopbox-transition);
+}
+
+.shopbox-trigger-card:hover {
+  box-shadow: var(--shopbox-shadow-card-hover);
+}
+
+.shopbox-trigger-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.shopbox-trigger-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--shopbox-primary-light);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--shopbox-primary);
+  font-size: 16px;
+}
+
+.shopbox-trigger-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--shopbox-primary);
+}
+
+.shopbox-trigger-toggle .toggle-dot {
+  width: 36px;
+  height: 20px;
+  background: var(--shopbox-primary);
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: background var(--shopbox-transition);
+}
+
+.shopbox-trigger-toggle .toggle-dot::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  transition: transform var(--shopbox-transition);
+}
+
+.shopbox-trigger-toggle .toggle-dot.off {
+  background: #ccc;
+}
+
+.shopbox-trigger-toggle .toggle-dot.off::after {
+  right: auto;
+  left: 2px;
+}
+
+.shopbox-trigger-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--shopbox-text-dark);
+  margin: 8px 0 4px 0;
+}
+
+.shopbox-trigger-desc {
+  font-size: 13px;
+  color: var(--shopbox-neutral);
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+.shopbox-trigger-preview {
+  background: var(--shopbox-neutral-light);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--shopbox-text-body);
+  font-style: italic;
+}
+
+/* ============================================================
+   Account Info Row
+   ============================================================ */
+
+.shopbox-account-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--shopbox-white);
+  border: 1px solid var(--shopbox-neutral-border);
+  border-radius: var(--shopbox-radius);
+}
+
+.shopbox-account-avatar {
+  width: 48px;
+  height: 48px;
+  background: var(--shopbox-primary-light);
+  border: 2px solid var(--shopbox-primary);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--shopbox-primary);
+}
+
+.shopbox-account-info {
+  flex: 1;
+}
+
+.shopbox-account-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--shopbox-text-dark);
+}
+
+.shopbox-account-meta {
+  font-size: 12px;
+  color: var(--shopbox-neutral);
+}
+
+.shopbox-account-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--shopbox-primary);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.shopbox-account-link:hover {
+  color: var(--shopbox-primary-hover);
+  text-decoration: underline;
+}
+
+/* ============================================================
+   Welcome / Onboarding Card
+   ============================================================ */
+
+.shopbox-welcome-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 24px;
+}
+
+.shopbox-welcome-card {
+  background: var(--shopbox-white);
+  border-radius: var(--shopbox-radius);
+  padding: 40px 48px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: var(--shopbox-shadow-card);
+  text-align: left;
+}
+
+.shopbox-welcome-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--shopbox-primary);
+  margin-bottom: 16px;
+}
+
+.shopbox-welcome-badge .dot {
+  width: 8px;
+  height: 8px;
+  background: var(--shopbox-tertiary);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.shopbox-welcome-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--shopbox-text-dark);
+  margin: 0 0 12px 0;
+  line-height: 1.15;
+}
+
+.shopbox-welcome-subtitle {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--shopbox-neutral);
+  margin: 0 0 28px 0;
+}
+
+.shopbox-welcome-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.shopbox-welcome-info-item {
+  background: var(--shopbox-neutral-light);
+  border-radius: var(--shopbox-radius-sm);
+  padding: 14px 16px;
+}
+
+.shopbox-welcome-info-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--shopbox-neutral);
+  margin-bottom: 4px;
+}
+
+.shopbox-welcome-info-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--shopbox-text-dark);
+}
+
+.shopbox-welcome-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px 24px;
+  background: var(--shopbox-primary);
+  color: var(--shopbox-white);
+  border: none;
+  border-radius: var(--shopbox-radius);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--shopbox-transition), transform var(--shopbox-transition);
+}
+
+.shopbox-welcome-cta:hover {
+  background: var(--shopbox-primary-hover);
+  transform: translateY(-1px);
+}
+
+.shopbox-welcome-cta:active {
+  background: var(--shopbox-secondary);
+  transform: translateY(0);
+}
+
+.shopbox-welcome-cta-icon {
+  font-size: 20px;
+}
+
+.shopbox-welcome-secure {
+  text-align: center;
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 12px;
+}
+
+.shopbox-welcome-footer {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--shopbox-neutral-border);
+}
+
+.shopbox-welcome-footer a {
+  font-size: 13px;
+  color: var(--shopbox-neutral);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.shopbox-welcome-footer a:hover {
+  color: var(--shopbox-primary);
+}
+
+/* ============================================================
+   Connected Dashboard View (Channels)
+   ============================================================ */
+
+.shopbox-connected-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.shopbox-connected-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--shopbox-primary-light);
+  color: var(--shopbox-primary);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.shopbox-connected-badge .dot {
+  width: 6px;
+  height: 6px;
+  background: var(--shopbox-primary);
+  border-radius: 50%;
+}
+
+/* ============================================================
+   Section Headers (like "Automations Active", "Recent Events")
+   ============================================================ */
+
+.shopbox-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+}
+
+.shopbox-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--shopbox-text-dark);
+}
+
+.shopbox-section-action {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--shopbox-neutral);
+  background: var(--shopbox-neutral-light);
+  border: 1px solid var(--shopbox-neutral-border);
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all var(--shopbox-transition);
+}
+
+.shopbox-section-action:hover {
+  background: var(--shopbox-primary-light);
+  color: var(--shopbox-primary);
+  border-color: var(--shopbox-primary);
+}
+
+/* ============================================================
+   Activity Feed
+   ============================================================ */
+
+.shopbox-event-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.shopbox-event-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--shopbox-neutral-border);
+}
+
+.shopbox-event-item:last-child {
+  border-bottom: none;
+}
+
+.shopbox-event-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.shopbox-event-icon.comment {
+  background: #eef3ff;
+  color: #4c6ef5;
+}
+
+.shopbox-event-icon.automation {
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
+.shopbox-event-icon.order {
+  background: var(--shopbox-primary-light);
+  color: var(--shopbox-primary);
+}
+
+.shopbox-event-icon.lead {
+  background: var(--shopbox-tertiary-light);
+  color: var(--shopbox-tertiary);
+}
+
+.shopbox-event-body {
+  flex: 1;
+}
+
+.shopbox-event-text {
+  font-size: 13px;
+  color: var(--shopbox-text-body);
+  line-height: 1.4;
+}
+
+.shopbox-event-time {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+.shopbox-event-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--shopbox-neutral-light);
+  color: var(--shopbox-neutral);
+  border: 1px solid var(--shopbox-neutral-border);
+}
+
+/* ============================================================
+   Tag Pills
+   ============================================================ */
+
+.shopbox-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--shopbox-text-body);
+  background: var(--shopbox-neutral-light);
+  border: 1px solid var(--shopbox-neutral-border);
+  border-radius: 4px;
+  padding: 3px 8px;
+  margin-right: 6px;
+  margin-top: 8px;
+}
+
+.shopbox-tag.success {
+  background: var(--shopbox-primary-light);
+  color: var(--shopbox-primary);
+  border-color: transparent;
+}
+
+/* ============================================================
+   Sidebar Panels
+   ============================================================ */
+
+.shopbox-sidebar-panel {
+  background: var(--shopbox-neutral-light);
+  border: 1px solid var(--shopbox-neutral-border);
+  border-radius: var(--shopbox-radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.shopbox-sidebar-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--shopbox-neutral);
+  margin-bottom: 12px;
+}
+
+.shopbox-sidebar-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--shopbox-text-dark);
+  margin-bottom: 8px;
+}
+
+.shopbox-sidebar-status .dot {
+  width: 8px;
+  height: 8px;
+  background: var(--shopbox-tertiary);
+  border-radius: 50%;
+}
+
+.shopbox-sidebar-text {
+  font-size: 13px;
+  color: var(--shopbox-neutral);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.shopbox-sidebar-timestamp {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: var(--shopbox-white);
+  border: 1px solid var(--shopbox-neutral-border);
+  border-radius: var(--shopbox-radius-sm);
+}
+
+.shopbox-sidebar-timestamp-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--shopbox-text-dark);
+}
+
+.shopbox-sidebar-timestamp-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--shopbox-primary);
+}
+
+/* ============================================================
+   Pro Tips Card
+   ============================================================ */
+
+.shopbox-tips-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.shopbox-tips-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--shopbox-neutral);
+  line-height: 1.5;
+  padding: 8px 0;
+}
+
+.shopbox-tips-list li .tip-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.shopbox-tips-list li:nth-child(1) .tip-icon {
+  background: var(--shopbox-primary-light);
+  color: var(--shopbox-primary);
+}
+
+.shopbox-tips-list li:nth-child(2) .tip-icon {
+  background: #eef3ff;
+  color: #4c6ef5;
+}
+
+.shopbox-tips-list li:nth-child(3) .tip-icon {
+  background: var(--shopbox-tertiary-light);
+  color: var(--shopbox-tertiary);
+}
+
+/* ============================================================
+   Footer Link
+   ============================================================ */
+
+.shopbox-footer-cta {
+  text-align: center;
+  padding: 24px 0 8px;
+  font-size: 13px;
+  color: var(--shopbox-neutral);
+}
+
+.shopbox-footer-cta a,
+.shopbox-footer-cta button {
+  color: var(--shopbox-primary);
+  text-decoration: underline;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.shopbox-footer-cta a:hover,
+.shopbox-footer-cta button:hover {
+  color: var(--shopbox-secondary);
+}
+
+/* ============================================================
+   Grid Helpers
+   ============================================================ */
+
+.shopbox-triggers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.shopbox-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .shopbox-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shopbox-triggers-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shopbox-welcome-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shopbox-welcome-card {
+    padding: 28px 24px;
+  }
+
+  .shopbox-welcome-title {
+    font-size: 24px;
+  }
+}
+
+/* ============================================================
+   Two-column layout helper
+   ============================================================ */
+
+.shopbox-two-col {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .shopbox-two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   Template Cards (Automation Settings)
+   ============================================================ */
+
+.shopbox-template-card {
+  background: var(--shopbox-white);
+  border: 1px solid var(--shopbox-neutral-border);
+  border-radius: var(--shopbox-radius);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.shopbox-template-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.shopbox-template-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--shopbox-primary-light);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--shopbox-primary);
+  font-size: 16px;
+}
+
+.shopbox-template-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--shopbox-text-dark);
+}
+
+.shopbox-template-subtitle {
+  font-size: 12px;
+  color: var(--shopbox-neutral);
+  margin-left: 48px;
+  margin-bottom: 16px;
+}
+
+.shopbox-template-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--shopbox-neutral);
+  margin-bottom: 8px;
+  margin-left: 0;
+}
+
+.shopbox-template-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px 14px;
+  border: 1px solid var(--shopbox-neutral-border);
+  border-radius: var(--shopbox-radius-sm);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--shopbox-text-body);
+  background: var(--shopbox-white);
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color var(--shopbox-transition);
+}
+
+.shopbox-template-textarea:focus {
+  outline: none;
+  border-color: var(--shopbox-primary);
+  box-shadow: 0 0 0 2px var(--shopbox-primary-light);
+}
+
+.shopbox-template-tags {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ============================================================
+   Action Bar
+   ============================================================ */
+
+.shopbox-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px 0;
+  margin-top: 8px;
+}
+
+.shopbox-btn-secondary {
+  padding: 10px 24px;
+  background: var(--shopbox-white);
+  border: 1px solid var(--shopbox-neutral-border);
+  border-radius: var(--shopbox-radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--shopbox-text-dark);
+  cursor: pointer;
+  transition: all var(--shopbox-transition);
+}
+
+.shopbox-btn-secondary:hover {
+  background: var(--shopbox-neutral-light);
+}
+
+.shopbox-btn-primary {
+  padding: 10px 24px;
+  background: var(--shopbox-primary);
+  border: none;
+  border-radius: var(--shopbox-radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--shopbox-white);
+  cursor: pointer;
+  transition: all var(--shopbox-transition);
+}
+
+.shopbox-btn-primary:hover {
+  background: var(--shopbox-primary-hover);
+}
