@@ -22,6 +22,7 @@ export default function App() {
         <s-link href="/app/channels">Channels</s-link>
         <s-link href="/app/automation">Automation</s-link>
         <s-link href="/app/post-automations">Post Automations</s-link>
+        <s-link href="/app/billing">Pricing & Billing</s-link>
       </s-app-nav>
       <Outlet />
     </AppProvider>
