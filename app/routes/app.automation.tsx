@@ -30,10 +30,19 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 interface TriggerData {
+  id: string;
   keyword: string;
   isActive: boolean;
-  messagesSent: number;
+  messagesSent?: number;
+  triggerCount?: number;
   replyComment: boolean;
+  templateMessage?: string;
+}
+
+interface StatsData {
+  totalTriggers: number;
+  totalDmsSent: number;
+  totalOrdersFromIg?: number;
 }
 
 export default function Automation() {
@@ -41,31 +50,50 @@ export default function Automation() {
   const shopify = useAppBridge();
 
   const [triggers, setTriggers] = useState<TriggerData[]>([]);
+  const [stats, setStats] = useState<StatsData>({ totalTriggers: 0, totalDmsSent: 0 });
   const [loading, setLoading] = useState(true);
+  
+  // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [keyword, setKeyword] = useState("");
-  const [replyComment, setReplyComment] = useState(true);
+  const [newKeyword, setNewKeyword] = useState("");
+  const [newReplyComment, setNewReplyComment] = useState(true);
 
-  const fetchTriggers = async () => {
+  // Edit state for templates and reply settings
+  const [editedTemplates, setEditedTemplates] = useState<Record<string, string>>({});
+  const [editedReplyComments, setEditedReplyComments] = useState<Record<string, boolean>>({});
+  const [isSavingTweaks, setIsSavingTweaks] = useState(false);
+
+  const fetchDashboardData = async () => {
     try {
       const idToken = await shopify.idToken();
-      const res = await fetch(`${BACKEND_URL}/api/meta/triggers?shop=${shop}`, {
-        headers: {
-          "Authorization": `Bearer ${idToken}`,
-          "ngrok-skip-browser-warning": "true" 
-        }
+      const headers = {
+        "Authorization": `Bearer ${idToken}`,
+        "ngrok-skip-browser-warning": "true" 
+      };
+
+      const [triggersRes, statsRes] = await Promise.all([
+        fetch(`${BACKEND_URL}/api/meta/triggers?shop=${shop}`, { headers }),
+        fetch(`${BACKEND_URL}/api/meta/triggers/stats?shop=${shop}`, { headers })
+      ]);
+
+      const triggersData = await triggersRes.json();
+      const statsData = await statsRes.json();
+
+      setTriggers(triggersData);
+      setStats({
+        totalTriggers: statsData.totalTriggers || triggersData.length,
+        totalDmsSent: statsData.totalDmsSent || 0,
+        totalOrdersFromIg: statsData.totalOrdersFromIg || 0
       });
-      const data = await res.json();
-      setTriggers(data);
       setLoading(false);
     } catch (err) {
-      console.error("Triggers load failed:", err);
+      console.error("Dashboard data load failed:", err);
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchTriggers();
+    fetchDashboardData();
   }, [shopify, shop]);
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -73,6 +101,8 @@ export default function Automation() {
   const handleAddTrigger = async () => {
     try {
       const idToken = await shopify.idToken();
+      const details = getTriggerDetails(newKeyword);
+      
       const response = await fetch(`${BACKEND_URL}/api/meta/triggers`, {
         method: "POST",
         headers: {
@@ -80,19 +110,106 @@ export default function Automation() {
           "Authorization": `Bearer ${idToken}`,
           "ngrok-skip-browser-warning": "true" 
         },
-        body: JSON.stringify({ keyword, replyComment })
+        body: JSON.stringify({ 
+          keyword: newKeyword, 
+          replyComment: newReplyComment,
+          templateMessage: details.template // default template for new ones
+        })
       });
 
       if (response.ok) {
         setIsModalOpen(false);
-        setKeyword("");
-        setReplyComment(true);
-        fetchTriggers();
+        setNewKeyword("");
+        setNewReplyComment(true);
+        fetchDashboardData();
         shopify.toast.show("Trigger created successfully");
       }
     } catch (err) {
       console.error("Save failed:", err);
       shopify.toast.show("Failed to save trigger", { isError: true });
+    }
+  };
+
+  const handleSaveTweaks = async () => {
+    setIsSavingTweaks(true);
+    try {
+      const idToken = await shopify.idToken();
+      
+      // Find all triggers that were modified
+      const modifiedTriggerIds = new Set([
+        ...Object.keys(editedTemplates),
+        ...Object.keys(editedReplyComments)
+      ]);
+
+      const promises = Array.from(modifiedTriggerIds).map(id => {
+        const originalTrigger = triggers.find(t => t.id === id);
+        if (!originalTrigger) return Promise.resolve();
+        
+        const details = getTriggerDetails(originalTrigger.keyword);
+        const templateMessage = editedTemplates[id] ?? originalTrigger.templateMessage ?? details.template;
+        const replyComment = editedReplyComments[id] ?? originalTrigger.replyComment;
+
+        return fetch(`${BACKEND_URL}/api/meta/triggers`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${idToken}`,
+            "ngrok-skip-browser-warning": "true" 
+          },
+          body: JSON.stringify({ 
+            keyword: originalTrigger.keyword, 
+            replyComment,
+            templateMessage 
+          })
+        });
+      });
+
+      await Promise.all(promises);
+
+      shopify.toast.show("Automation tweaks saved!");
+      setEditedTemplates({});
+      setEditedReplyComments({});
+      fetchDashboardData();
+    } catch (err) {
+      console.error("Failed to save tweaks:", err);
+      shopify.toast.show("Failed to save changes", { isError: true });
+    } finally {
+      setIsSavingTweaks(false);
+    }
+  };
+
+  const handleDiscardTweaks = () => {
+    setEditedTemplates({});
+    setEditedReplyComments({});
+  };
+
+  const toggleIsActive = async (id: string, currentStatus: boolean) => {
+    try {
+      const idToken = await shopify.idToken();
+      const newStatus = !currentStatus;
+
+      // Optimistic update
+      setTriggers(prev => prev.map(t => t.id === id ? { ...t, isActive: newStatus } : t));
+
+      const response = await fetch(`${BACKEND_URL}/api/meta/triggers/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${idToken}`,
+          "ngrok-skip-browser-warning": "true" 
+        },
+        body: JSON.stringify({ isActive: newStatus })
+      });
+
+      if (!response.ok) {
+        throw new Error("Update failed");
+      }
+      
+      shopify.toast.show(`Trigger ${newStatus ? 'enabled' : 'paused'}`);
+    } catch (err) {
+      console.error("Toggle failed:", err);
+      setTriggers(prev => prev.map(t => t.id === id ? { ...t, isActive: currentStatus } : t));
+      shopify.toast.show("Failed to update trigger status", { isError: true });
     }
   };
 
@@ -130,6 +247,8 @@ export default function Automation() {
         };
     }
   };
+
+  const hasUnsavedChanges = Object.keys(editedTemplates).length > 0 || Object.keys(editedReplyComments).length > 0;
 
   return (
     <Page 
@@ -174,10 +293,13 @@ export default function Automation() {
                   Configure the precise wording of your automated customer interactions. Use these templates to maintain your brand's unique voice across all touchpoints.
                 </Text>
                 <div style={{ marginTop: 20 }}>
-                  {triggers.map((trigger, idx) => {
+                  {triggers.map((trigger) => {
                     const details = getTriggerDetails(trigger.keyword);
+                    const currentTemplateValue = editedTemplates[trigger.id] ?? trigger.templateMessage ?? details.template;
+                    const currentReplyComment = editedReplyComments[trigger.id] ?? trigger.replyComment;
+
                     return (
-                      <div key={idx} className="shopbox-template-card">
+                      <div key={trigger.id} className="shopbox-template-card">
                         <div className="shopbox-template-header">
                           <div className="shopbox-template-icon">{details.icon}</div>
                           <span className="shopbox-template-title">
@@ -189,7 +311,8 @@ export default function Automation() {
                         <div className="shopbox-template-label">Template Content</div>
                         <textarea 
                           className="shopbox-template-textarea"
-                          defaultValue={details.template}
+                          value={currentTemplateValue}
+                          onChange={(e) => setEditedTemplates(prev => ({ ...prev, [trigger.id]: e.target.value }))}
                           rows={3}
                         />
                         
@@ -200,16 +323,27 @@ export default function Automation() {
                         </div>
 
                         <div style={{ marginTop: 12 }}>
-                          <InlineStack gap="200" align="start">
-                            <Badge tone={trigger.isActive ? "success" : "warning"}>
-                              {trigger.isActive ? "Active" : "Inactive"}
-                            </Badge>
+                          <InlineStack gap="200" align="start" blockAlign="center">
+                            <span 
+                              style={{ cursor: 'pointer' }} 
+                              onClick={() => toggleIsActive(trigger.id, trigger.isActive)}
+                            >
+                              <Badge tone={trigger.isActive ? "success" : "warning"}>
+                                {trigger.isActive ? "Active (Click to Pause)" : "Paused (Click to Resume)"}
+                              </Badge>
+                            </span>
                             <Badge>
-                              {trigger.messagesSent || 0} sent
+                              {trigger.triggerCount ?? trigger.messagesSent ?? 0} sent
                             </Badge>
-                            {trigger.replyComment && (
-                              <Badge tone="info">Public Reply</Badge>
-                            )}
+                            
+                            <span 
+                              style={{ cursor: 'pointer', transition: 'opacity 0.2s' }}
+                              onClick={() => setEditedReplyComments(prev => ({ ...prev, [trigger.id]: !currentReplyComment }))}
+                            >
+                              <Badge tone={currentReplyComment ? "info" : "normal"}>
+                                {currentReplyComment ? "✓ Public Reply ON" : "Public Reply OFF"}
+                              </Badge>
+                            </span>
                           </InlineStack>
                         </div>
                       </div>
@@ -218,10 +352,24 @@ export default function Automation() {
                 </div>
 
                 {/* Action Bar */}
-                <div className="shopbox-action-bar">
-                  <button className="shopbox-btn-secondary">Discard changes</button>
-                  <button className="shopbox-btn-primary">Save tweaks</button>
-                </div>
+                {hasUnsavedChanges && (
+                  <div className="shopbox-action-bar">
+                    <button 
+                      className="shopbox-btn-secondary" 
+                      onClick={handleDiscardTweaks}
+                      disabled={isSavingTweaks}
+                    >
+                      Discard changes
+                    </button>
+                    <button 
+                      className="shopbox-btn-primary" 
+                      onClick={handleSaveTweaks}
+                      disabled={isSavingTweaks}
+                    >
+                      {isSavingTweaks ? "Saving..." : "Save tweaks"}
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Right: Sidebar */}
@@ -237,7 +385,7 @@ export default function Automation() {
                   </p>
                   <div className="shopbox-sidebar-timestamp">
                     <span className="shopbox-sidebar-timestamp-label">Last Triggered</span>
-                    <span className="shopbox-sidebar-timestamp-value">2m ago</span>
+                    <span className="shopbox-sidebar-timestamp-value">Just now</span>
                   </div>
                 </div>
 
@@ -266,7 +414,7 @@ export default function Automation() {
                   <BlockStack gap="200">
                     <InlineStack align="space-between">
                       <Text as="span" variant="bodySm">Total triggers</Text>
-                      <Text as="span" variant="bodySm" fontWeight="bold">{triggers.length}</Text>
+                      <Text as="span" variant="bodySm" fontWeight="bold">{stats.totalTriggers}</Text>
                     </InlineStack>
                     <InlineStack align="space-between">
                       <Text as="span" variant="bodySm">Active</Text>
@@ -277,7 +425,13 @@ export default function Automation() {
                     <InlineStack align="space-between">
                       <Text as="span" variant="bodySm">Total DMs sent</Text>
                       <Text as="span" variant="bodySm" fontWeight="bold">
-                        {triggers.reduce((sum, t) => sum + (t.messagesSent || 0), 0)}
+                        {stats.totalDmsSent}
+                      </Text>
+                    </InlineStack>
+                    <InlineStack align="space-between">
+                      <Text as="span" variant="bodySm">Orders from IG</Text>
+                      <Text as="span" variant="bodySm" fontWeight="bold">
+                        {stats.totalOrdersFromIg || 0}
                       </Text>
                     </InlineStack>
                   </BlockStack>
@@ -312,15 +466,15 @@ export default function Automation() {
           <FormLayout>
             <TextField
               label="Keyword"
-              value={keyword}
-              onChange={(v) => setKeyword(v)}
+              value={newKeyword}
+              onChange={(v) => setNewKeyword(v.toUpperCase())}
               autoComplete="off"
-              helpText="When a customer sends this keyword in a DM, the bot responds with the catalog."
+              helpText="When a customer sends this keyword in a DM, the bot responds with the template."
             />
             <Checkbox
               label="Reply to comments automatically"
-              checked={replyComment}
-              onChange={(v) => setReplyComment(v)}
+              checked={newReplyComment}
+              onChange={(v) => setNewReplyComment(v)}
               helpText="If enabled, the bot will also reply to public comments using this keyword."
             />
           </FormLayout>
