@@ -2,7 +2,7 @@
 
 client_id = "3ee224caadbeffa955f85cfefb366ee9"
 name = "shopbox"
-application_url = "https://dose-injured-contribution-rehab.trycloudflare.com"
+application_url = "https://grateful-unbefriended-lorrine.ngrok-free.dev"
 embedded = true
 
 [build]
@@ -21,7 +21,7 @@ api_version = "2025-01"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_customers,read_discounts,read_fulfillments,read_inventory,read_metaobjects,read_orders,read_price_rules,read_product_listings,read_products,read_shipping,write_customers,write_metaobjects,write_orders"
+scopes = "read_customers,read_discounts,read_fulfillments,read_inventory,read_metaobjects,read_orders,read_price_rules,read_product_listings,read_products,read_shipping,write_customers,write_metaobjects,write_orders,write_draft_orders"
 
 [auth]
 redirect_urls = [

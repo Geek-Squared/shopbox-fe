@@ -17,6 +17,9 @@ import {
   SkeletonBodyText,
   Button,
   Icon,
+  Thumbnail,
+  Box,
+  Banner,
 } from "@shopify/polaris";
 import { PlusIcon, DeleteIcon, CheckCircleIcon } from "@shopify/polaris-icons";
 import { useState, useEffect } from "react";
@@ -41,6 +44,15 @@ interface MappingData {
   isActive: boolean;
 }
 
+interface SocialPost {
+  id: string;
+  text: string;
+  url: string;
+  imageUrl: string | null;
+  createdAt: string;
+  type: string;
+}
+
 export default function PostAutomations() {
   const { shop } = useLoaderData<typeof loader>();
   const shopify = useAppBridge();
@@ -55,6 +67,10 @@ export default function PostAutomations() {
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [selectedProductTitle, setSelectedProductTitle] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Post Picker state
+  const [socialPosts, setSocialPosts] = useState<SocialPost[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(false);
 
   const fetchMappings = async () => {
     try {
@@ -66,17 +82,58 @@ export default function PostAutomations() {
         }
       });
       const data = await res.json();
-      setMappings(data);
+      if (Array.isArray(data)) {
+        setMappings(data);
+      } else {
+        console.warn("Backend returned non-array data:", data);
+        setMappings([]);
+      }
       setLoading(false);
     } catch (err) {
       console.error("Mappings load failed:", err);
-      setLoading(false);
+      setMappings([]);
+    }
+  };
+
+  const fetchSocialPosts = async (targetPlatform: string) => {
+    setLoadingPosts(true);
+    try {
+      const idToken = await shopify.idToken();
+      const endpoint = targetPlatform === 'facebook' 
+        ? '/api/meta/auth/facebook-posts' 
+        : '/api/meta/auth/instagram-posts';
+      
+      const res = await fetch(`${BACKEND_URL}${endpoint}?shop=${shop}`, {
+        headers: {
+          "Authorization": `Bearer ${idToken}`,
+          "ngrok-skip-browser-warning": "true" 
+        }
+      });
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setSocialPosts(data);
+      } else {
+        setSocialPosts([]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch social posts:", err);
+      setSocialPosts([]);
+    } finally {
+      setLoadingPosts(false);
     }
   };
 
   useEffect(() => {
     fetchMappings();
   }, [shopify, shop]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      fetchSocialPosts(platform[0]);
+    } else {
+      setSocialPosts([]);
+    }
+  }, [isModalOpen]);
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -151,7 +208,7 @@ export default function PostAutomations() {
       const newStatus = !currentStatus;
 
       // Optimistic UI update
-      setMappings(prev => prev.map(m => m.id === id ? { ...m, isActive: newStatus } : m));
+      setMappings(prev => (Array.isArray(prev) ? prev : []).map(m => m.id === id ? { ...m, isActive: newStatus } : m));
 
       const response = await fetch(`${BACKEND_URL}/api/meta/post-mappings/${id}`, {
         method: "PUT",
@@ -171,7 +228,7 @@ export default function PostAutomations() {
     } catch (err) {
       console.error("Toggle failed:", err);
       // Revert optimism
-      setMappings(prev => prev.map(m => m.id === id ? { ...m, isActive: currentStatus } : m));
+      setMappings(prev => (Array.isArray(prev) ? prev : []).map(m => m.id === id ? { ...m, isActive: currentStatus } : m));
       shopify.toast.show("Failed to update status", { isError: true });
     }
   };
@@ -189,7 +246,7 @@ export default function PostAutomations() {
 
       if (response.ok) {
         shopify.toast.show("Automation removed");
-        setMappings(prev => prev.filter(m => m.id !== id));
+        setMappings(prev => (Array.isArray(prev) ? prev : []).filter(m => m.id !== id));
       } else {
         throw new Error("Delete failed");
       }
@@ -199,7 +256,7 @@ export default function PostAutomations() {
     }
   };
 
-  const rows = mappings.map((m) => [
+  const rows = (Array.isArray(mappings) ? mappings : []).map((m) => [
     <Badge tone={m.platform === 'facebook' ? 'info' : 'success'}>
       {m.platform.charAt(0).toUpperCase() + m.platform.slice(1)}
     </Badge>,
@@ -292,8 +349,70 @@ export default function PostAutomations() {
                 { label: 'Instagram', value: 'instagram' },
               ]}
               selected={platform}
-              onChange={setPlatform}
+              onChange={(val) => {
+                setPlatform(val);
+                fetchSocialPosts(val[0]);
+              }}
             />
+
+            {loadingPosts ? (
+              <Box paddingBlockStart="400" paddingBlockEnd="400">
+                <BlockStack gap="200" align="center">
+                  <SkeletonBodyText lines={2} />
+                  <Text as="p" tone="subdued">Fetching your latest {platform[0]} posts...</Text>
+                </BlockStack>
+              </Box>
+            ) : socialPosts.length > 0 ? (
+              <Box paddingBlockStart="200">
+                <Text as="p" fontWeight="medium" variant="bodyMd" tone="subdued">Select a post to link:</Text>
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(2, 1fr)', 
+                  gap: '12px', 
+                  marginTop: '12px',
+                  maxHeight: '280px',
+                  overflowY: 'auto',
+                  padding: '4px'
+                }}>
+                  {socialPosts.map((post) => (
+                    <div 
+                      key={post.id} 
+                      onClick={() => setPostUrl(post.url)}
+                      style={{ 
+                        cursor: 'pointer',
+                        padding: '8px',
+                        borderRadius: '8px',
+                        border: postUrl === post.url ? '2px solid #008060' : '1px solid #dfe3e8',
+                        backgroundColor: postUrl === post.url ? '#f0fdf9' : 'white',
+                        transition: 'all 0.2s ease',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px'
+                      }}
+                    >
+                      {post.imageUrl ? (
+                        <div style={{ width: '100%', height: '100px', borderRadius: '4px', overflow: 'hidden' }}>
+                          <img src={post.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                      ) : (
+                        <div style={{ width: '100%', height: '100px', borderRadius: '4px', backgroundColor: '#f6f6f7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Text as="span" tone="subdued">No Image</Text>
+                        </div>
+                      )}
+                      <Text as="p" variant="bodySm" truncate>
+                        {post.text || "No caption"}
+                      </Text>
+                    </div>
+                  ))}
+                </div>
+              </Box>
+            ) : (
+              <Box paddingBlockStart="200">
+                <Banner tone="info" title={`No ${platform[0]} posts found`}>
+                  <p>We couldn't find any recent posts. Make sure your account is connected or paste a URL manually below.</p>
+                </Banner>
+              </Box>
+            )}
 
             <TextField
               label="Post URL"
@@ -301,7 +420,7 @@ export default function PostAutomations() {
               onChange={(v) => setPostUrl(v)}
               autoComplete="off"
               placeholder="https://www.facebook.com/photo/?fbid=..."
-              helpText={platform[0] === 'instagram' ? "Note: Instagram currently requires placing the direct media ID in the URL structure." : "Paste the link to the original Facebook post."}
+              helpText={platform[0] === 'instagram' ? "Selected media URL will appear here." : "Selected post URL will appear here."}
             />
 
             <div style={{ marginTop: 8 }}>
