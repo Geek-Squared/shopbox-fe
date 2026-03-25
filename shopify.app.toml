@@ -2,7 +2,7 @@
 
 client_id = "3ee224caadbeffa955f85cfefb366ee9"
 name = "shopbox"
-application_url = "https://grateful-unbefriended-lorrine.ngrok-free.dev"
+application_url = "https://shopbox-shopify-api-production.up.railway.app"
 embedded = true
 
 [build]
@@ -25,5 +25,6 @@ scopes = "read_customers,read_discounts,read_fulfillments,read_inventory,read_me
 
 [auth]
 redirect_urls = [
+  "https://shopbox-shopify-api-production.up.railway.app/api/shopify/auth/callback",
   "https://grateful-unbefriended-lorrine.ngrok-free.dev/api/shopify/auth/callback"
 ]
