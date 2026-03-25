@@ -290,7 +290,7 @@ export default function Automation() {
               {/* Left: Template Cards */}
               <div>
                 <Text as="p" tone="subdued" variant="bodySm">
-                  Configure the precise wording of your automated customer interactions. Use these templates to maintain your brand's unique voice across all touchpoints.
+                  Keyword triggers allow your bot to automatically respond when customers use specific words in messages or comments.
                 </Text>
                 <div style={{ marginTop: 20 }}>
                   {triggers.map((trigger) => {
@@ -308,19 +308,7 @@ export default function Automation() {
                         </div>
                         <p className="shopbox-template-subtitle">{details.description}</p>
                         
-                        <div className="shopbox-template-label">Template Content</div>
-                        <textarea 
-                          className="shopbox-template-textarea"
-                          value={currentTemplateValue}
-                          onChange={(e) => setEditedTemplates(prev => ({ ...prev, [trigger.id]: e.target.value }))}
-                          rows={3}
-                        />
-                        
-                        <div className="shopbox-template-tags">
-                          {details.tags.map((tag, i) => (
-                            <span key={i} className="shopbox-tag">{tag}</span>
-                          ))}
-                        </div>
+                        {/* Template editing hidden for now */}
 
                         <div style={{ marginTop: 12 }}>
                           <InlineStack gap="200" align="start" blockAlign="center">
@@ -333,14 +321,14 @@ export default function Automation() {
                               </Badge>
                             </span>
                             <Badge>
-                              {trigger.triggerCount ?? trigger.messagesSent ?? 0} sent
+                              {`${trigger.triggerCount ?? trigger.messagesSent ?? 0} sent`}
                             </Badge>
                             
                             <span 
                               style={{ cursor: 'pointer', transition: 'opacity 0.2s' }}
                               onClick={() => setEditedReplyComments(prev => ({ ...prev, [trigger.id]: !currentReplyComment }))}
                             >
-                              <Badge tone={currentReplyComment ? "info" : "normal"}>
+                              <Badge tone={currentReplyComment ? "info" : undefined}>
                                 {currentReplyComment ? "✓ Public Reply ON" : "Public Reply OFF"}
                               </Badge>
                             </span>

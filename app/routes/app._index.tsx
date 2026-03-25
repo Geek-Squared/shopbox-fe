@@ -9,7 +9,8 @@ import {
   Banner,
   FooterHelp,
   Link,
-  SkeletonBodyText
+  SkeletonBodyText,
+  EmptyState
 } from "@shopify/polaris";
 import { useLoaderData, useNavigate } from "react-router";
 import type { LoaderFunctionArgs } from "react-router";
@@ -83,13 +84,15 @@ export default function Index() {
         {/* Top Banner (only when no channels connected) */}
         {!loading && !isConnected && (
           <Layout.Section>
-            <Banner 
-              title="Connect Your First Channel" 
-              tone="warning"
-              action={{ content: 'Connect Instagram', onAction: () => navigate('/app/channels') }}
-            >
-              <p>Link your Instagram or Messenger account to start automating sales through DMs.</p>
-            </Banner>
+            <Card padding="0">
+              <EmptyState
+                heading="You're just one step away"
+                action={{ content: 'Connect Channels', onAction: () => navigate('/app/channels') }}
+                image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
+              >
+                <p>To start automating your sales, you need to connect your store with Instagram or Messenger first.</p>
+              </EmptyState>
+            </Card>
           </Layout.Section>
         )}
 
@@ -172,49 +175,61 @@ export default function Index() {
                 </button>
               </div>
 
-              <div className="shopbox-triggers-grid">
-                <div className="shopbox-trigger-card">
-                  <div className="shopbox-trigger-header">
-                    <div className="shopbox-trigger-icon">🏷️</div>
-                    <div className="shopbox-trigger-toggle">
-                      ON <div className="toggle-dot"></div>
+              {(stats.activeTriggersCount > 0) ? (
+                <div className="shopbox-triggers-grid">
+                  <div className="shopbox-trigger-card">
+                    <div className="shopbox-trigger-header">
+                      <div className="shopbox-trigger-icon">🏷️</div>
+                      <div className="shopbox-trigger-toggle">
+                        ON <div className="toggle-dot"></div>
+                      </div>
+                    </div>
+                    <div className="shopbox-trigger-title">Trigger: PRICE</div>
+                    <p className="shopbox-trigger-desc">Sends product details when customers ask for pricing.</p>
+                    <div className="shopbox-trigger-preview">
+                      "Hey! Thanks for your interest in {shop}. The price for this item is $49.00. Check it out here: [Link]"
                     </div>
                   </div>
-                  <div className="shopbox-trigger-title">Trigger: PRICE</div>
-                  <p className="shopbox-trigger-desc">Sends product details when customers ask for pricing.</p>
-                  <div className="shopbox-trigger-preview">
-                    "Hey! Thanks for your interest in {shop}. The price for this item is $49.00. Check it out here: [Link]"
-                  </div>
-                </div>
 
-                <div className="shopbox-trigger-card">
-                  <div className="shopbox-trigger-header">
-                    <div className="shopbox-trigger-icon">🔗</div>
-                    <div className="shopbox-trigger-toggle">
-                      ON <div className="toggle-dot"></div>
+                  <div className="shopbox-trigger-card">
+                    <div className="shopbox-trigger-header">
+                      <div className="shopbox-trigger-icon">🔗</div>
+                      <div className="shopbox-trigger-toggle">
+                        ON <div className="toggle-dot"></div>
+                      </div>
+                    </div>
+                    <div className="shopbox-trigger-title">Trigger: LINK</div>
+                    <p className="shopbox-trigger-desc">Automatically shares the product URL upon request.</p>
+                    <div className="shopbox-trigger-preview">
+                      "Of course! You can find everything from our latest collection right here: [Link]. Happy shopping!"
                     </div>
                   </div>
-                  <div className="shopbox-trigger-title">Trigger: LINK</div>
-                  <p className="shopbox-trigger-desc">Automatically shares the product URL upon request.</p>
-                  <div className="shopbox-trigger-preview">
-                    "Of course! You can find everything from our latest collection right here: [Link]. Happy shopping!"
-                  </div>
-                </div>
 
-                <div className="shopbox-trigger-card">
-                  <div className="shopbox-trigger-header">
-                    <div className="shopbox-trigger-icon">🛒</div>
-                    <div className="shopbox-trigger-toggle">
-                      ON <div className="toggle-dot"></div>
+                  <div className="shopbox-trigger-card">
+                    <div className="shopbox-trigger-header">
+                      <div className="shopbox-trigger-icon">🛒</div>
+                      <div className="shopbox-trigger-toggle">
+                        ON <div className="toggle-dot"></div>
+                      </div>
+                    </div>
+                    <div className="shopbox-trigger-title">Trigger: BUY</div>
+                    <p className="shopbox-trigger-desc">Drives immediate checkout for high-intent comments.</p>
+                    <div className="shopbox-trigger-preview">
+                      "Great choice! We've DM'd you a direct checkout link from {shop} to make it easy for you!"
                     </div>
                   </div>
-                  <div className="shopbox-trigger-title">Trigger: BUY</div>
-                  <p className="shopbox-trigger-desc">Drives immediate checkout for high-intent comments.</p>
-                  <div className="shopbox-trigger-preview">
-                    "Great choice! We've DM'd you a direct checkout link from {shop} to make it easy for you!"
-                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="shopbox-empty-automations">
+                  <BlockStack gap="400" align="center">
+                    <div style={{ fontSize: '48px', textAlign: 'center' }}>🤖</div>
+                    <Text as="p" fontWeight="medium" variant="bodyMd" tone="subdued">No active automation triggers.</Text>
+                    <button className="shopbox-btn-secondary" onClick={() => navigate('/app/automation')}>
+                      Initialize Triggers Now
+                    </button>
+                  </BlockStack>
+                </div>
+              )}
 
               {/* Footer CTA */}
               <div className="shopbox-footer-cta">

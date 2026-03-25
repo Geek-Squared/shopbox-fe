@@ -71,9 +71,10 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: var(--shopbox-primary);
+  height: 4px;
+  background: linear-gradient(to right, var(--shopbox-primary), var(--shopbox-tertiary));
   border-radius: var(--shopbox-radius-sm) var(--shopbox-radius-sm) 0 0;
+  z-index: 2;
 }
 
 .shopbox-stat-label {
