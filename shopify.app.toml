@@ -2,7 +2,7 @@
 
 client_id = "3ee224caadbeffa955f85cfefb366ee9"
 name = "shopbox"
-application_url = "https://shopbox-shopify-api-production.up.railway.app"
+application_url = "https://shopbox-fe.vercel.app"
 embedded = true
 
 [build]
