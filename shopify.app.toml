@@ -6,7 +6,7 @@ application_url = "https://shopbox-fe.vercel.app"
 embedded = true
 
 [build]
-automatically_update_urls_on_dev = true
+automatically_update_urls_on_dev = false
 
 [webhooks]
 api_version = "2025-01"
@@ -25,6 +25,5 @@ scopes = "read_customers,read_discounts,read_fulfillments,read_inventory,read_me
 
 [auth]
 redirect_urls = [
-  "https://shopbox-shopify-api-production.up.railway.app/api/shopify/auth/callback",
-  "https://grateful-unbefriended-lorrine.ngrok-free.dev/api/shopify/auth/callback"
+  "https://shopbox-shopify-api-production.up.railway.app/api/shopify/auth/callback"
 ]
