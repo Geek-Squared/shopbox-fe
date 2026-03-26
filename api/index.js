@@ -1,8 +1,4 @@
-import { createRequestHandler } from "@react-router/express";
+import { createRequestListener } from "@react-router/node";
 import * as build from "../build/server/index.js";
 
-const handler = createRequestHandler({ build, mode: process.env.NODE_ENV });
-
-export default async function (req, res) {
-  await handler(req, res, () => {});
-}
+export default createRequestListener({ build, mode: process.env.NODE_ENV });
