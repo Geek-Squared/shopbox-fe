@@ -22,7 +22,7 @@ import type { LoaderFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
 import { useAppBridge } from "@shopify/app-bridge-react";
 
-const BACKEND_URL = "https://shopbox-shopify-api-production.up.railway.app";
+const BACKEND_URL = "https://shopbox-api-production.up.railway.app";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session } = await authenticate.admin(request);

@@ -25,5 +25,5 @@ scopes = "read_customers,read_discounts,read_fulfillments,read_inventory,read_me
 
 [auth]
 redirect_urls = [
-  "https://shopbox-shopify-api-production.up.railway.app/api/shopify/auth/callback"
+  "https://shopbox-api-production.up.railway.app/api/shopify/auth/callback"
 ]
