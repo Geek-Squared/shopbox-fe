@@ -30,21 +30,35 @@ export class RailwaySessionStorage implements SessionStorage {
       const data = await res.json()
       if (!data) return undefined
       
-      // Convert expires to a Date BEFORE passing to the Session constructor
-      const expires = data.expires ? new Date(data.expires) : undefined;
+      const session = new Session(data);
       
-      // Guard against invalid date strings
-      if (expires && isNaN(expires.getTime())) {
-        console.error('Invalid expires value from API:', data.expires);
-        return undefined;
+      // Explicitly iterate and force parse any date-like fields
+      Object.keys(data).forEach(key => {
+        if (typeof data[key] === 'string' && 
+           (key.toLowerCase().includes('expires') || 
+            key.toLowerCase().includes('at') || 
+            key.toLowerCase().includes('expiry'))) {
+          try {
+            const date = new Date(data[key]);
+            if (!isNaN(date.getTime())) {
+              (session as any)[key] = date;
+            }
+          } catch (e) {
+            // Not a date after all, ignore
+          }
+        } else {
+          (session as any)[key] = data[key];
+        }
+      });
+
+      // Special handling for the critical 'expires' field
+      if (data.expires) {
+        session.expires = new Date(data.expires);
+      } else {
+        session.expires = undefined;
       }
 
-      const sessionData = {
-        ...data,
-        expires: expires,
-      };
-
-      return new Session(sessionData);
+      return session;
     } catch (error) {
       console.error('Failed to load session:', error);
       return undefined
@@ -81,11 +95,23 @@ export class RailwaySessionStorage implements SessionStorage {
       const data = await res.json()
       
       return data.map((s: any) => {
-        const expires = s.expires ? new Date(s.expires) : undefined;
-        return new Session({
-          ...s,
-          expires: expires,
+        const session = new Session(s);
+        Object.keys(s).forEach(key => {
+          if (typeof s[key] === 'string' && (key.toLowerCase().includes('expires') || key.toLowerCase().includes('at'))) {
+            const date = new Date(s[key]);
+            if (!isNaN(date.getTime())) {
+              (session as any)[key] = date;
+            }
+          } else {
+             (session as any)[key] = s[key];
+          }
         });
+        if (s.expires) {
+          session.expires = new Date(s.expires);
+        } else {
+          session.expires = undefined;
+        }
+        return session;
       });
     } catch (error) {
       console.error('Failed to find sessions:', error);
