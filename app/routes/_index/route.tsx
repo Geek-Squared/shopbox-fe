@@ -51,6 +51,11 @@ export default function App() {
             its benefit to your customer.
           </li>
         </ul>
+        <footer className={styles.footer}>
+          <a href="/policy" className={styles.footerLink}>
+            Privacy Policy
+          </a>
+        </footer>
       </div>
     </div>
   );
