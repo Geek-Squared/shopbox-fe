@@ -30,11 +30,21 @@ export class RailwaySessionStorage implements SessionStorage {
       const data = await res.json()
       if (!data) return undefined
       
-      const session = new Session(data);
-      if (data.expires) {
-        session.expires = new Date(data.expires);
+      // Convert expires to a Date BEFORE passing to the Session constructor
+      const expires = data.expires ? new Date(data.expires) : undefined;
+      
+      // Guard against invalid date strings
+      if (expires && isNaN(expires.getTime())) {
+        console.error('Invalid expires value from API:', data.expires);
+        return undefined;
       }
-      return session;
+
+      const sessionData = {
+        ...data,
+        expires: expires,
+      };
+
+      return new Session(sessionData);
     } catch (error) {
       console.error('Failed to load session:', error);
       return undefined
@@ -69,12 +79,13 @@ export class RailwaySessionStorage implements SessionStorage {
       )
       if (!res.ok) return []
       const data = await res.json()
+      
       return data.map((s: any) => {
-        const session = new Session(s);
-        if (s.expires) {
-          session.expires = new Date(s.expires);
-        }
-        return session;
+        const expires = s.expires ? new Date(s.expires) : undefined;
+        return new Session({
+          ...s,
+          expires: expires,
+        });
       });
     } catch (error) {
       console.error('Failed to find sessions:', error);
