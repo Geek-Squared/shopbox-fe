@@ -30,13 +30,13 @@ export class RailwaySessionStorage implements SessionStorage {
       const data = await res.json()
       if (!data) return undefined
       
+      const session = new Session(data);
       if (data.expires) {
-        data.expires = new Date(data.expires);
+        session.expires = new Date(data.expires);
       }
-      
-      // Re-construct the Session object
-      return new Session(data)
-    } catch {
+      return session;
+    } catch (error) {
+      console.error('Failed to load session:', error);
       return undefined
     }
   }
@@ -70,10 +70,14 @@ export class RailwaySessionStorage implements SessionStorage {
       if (!res.ok) return []
       const data = await res.json()
       return data.map((s: any) => {
-        if (s.expires) s.expires = new Date(s.expires);
-        return new Session(s);
+        const session = new Session(s);
+        if (s.expires) {
+          session.expires = new Date(s.expires);
+        }
+        return session;
       });
-    } catch {
+    } catch (error) {
+      console.error('Failed to find sessions:', error);
       return []
     }
   }
