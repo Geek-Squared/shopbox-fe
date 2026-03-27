@@ -30,6 +30,10 @@ export class RailwaySessionStorage implements SessionStorage {
       const data = await res.json()
       if (!data) return undefined
       
+      if (data.expires) {
+        data.expires = new Date(data.expires);
+      }
+      
       // Re-construct the Session object
       return new Session(data)
     } catch {
@@ -65,7 +69,10 @@ export class RailwaySessionStorage implements SessionStorage {
       )
       if (!res.ok) return []
       const data = await res.json()
-      return data.map((s: any) => new Session(s))
+      return data.map((s: any) => {
+        if (s.expires) s.expires = new Date(s.expires);
+        return new Session(s);
+      });
     } catch {
       return []
     }
