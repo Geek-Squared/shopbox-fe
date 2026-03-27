@@ -15,7 +15,23 @@ export class RailwaySessionStorage implements SessionStorage {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(session),
+        body: JSON.stringify({
+          id: session.id,
+          shop: session.shop,
+          state: session.state,
+          isOnline: session.isOnline,
+          scope: session.scope,
+          expires: session.expires,
+          accessToken: session.accessToken,
+          userId: session.onlineAccessInfo?.associated_user?.id,
+          firstName: session.onlineAccessInfo?.associated_user?.first_name,
+          lastName: session.onlineAccessInfo?.associated_user?.last_name,
+          email: session.onlineAccessInfo?.associated_user?.email,
+          accountOwner: session.onlineAccessInfo?.associated_user?.account_owner,
+          locale: session.onlineAccessInfo?.associated_user?.locale,
+          collaborator: session.onlineAccessInfo?.associated_user?.collaborator,
+          emailVerified: session.onlineAccessInfo?.associated_user?.email_verified,
+        }),
       });
 
       return response.ok;
