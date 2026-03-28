@@ -19,8 +19,11 @@ api_version = "2025-04"
   topics = [ "app/scopes_update" ]
   uri = "https://shopbox-api-production.up.railway.app/api/shopify/webhooks/app/scopes_update"
 
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "customers/data_request", "customers/redact", "shop/redact" ]
+  uri = "https://shopbox-api-production.up.railway.app/api/shopify/webhooks"
+
 [access_scopes]
-# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
 scopes = "read_customers,read_discounts,read_fulfillments,read_inventory,read_metaobjects,read_orders,read_price_rules,read_product_listings,read_products,read_shipping,write_customers,write_metaobjects,write_orders,write_draft_orders"
 
 [auth]
