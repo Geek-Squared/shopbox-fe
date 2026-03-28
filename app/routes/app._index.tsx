@@ -164,7 +164,7 @@ export default function Index() {
                 </div>
               </div>
 
-              {/* Automations Section */}
+              {/* Automations Section - Temporarily hidden 
               <div className="shopbox-section-header">
                 <span className="shopbox-section-title">Automations Active</span>
                 <button 
@@ -231,11 +231,11 @@ export default function Index() {
                 </div>
               )}
 
-              {/* Footer CTA */}
               <div className="shopbox-footer-cta">
                 Need to customize these messages? Head over to{" "}
                 <button onClick={() => navigate('/app/automation')}>Automation Settings</button>
               </div>
+              */}
             </div>
 
             {/* RIGHT COLUMN — Status Sidebar */}
