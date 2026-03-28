@@ -183,6 +183,31 @@ export default function Automation() {
     setEditedReplyComments({});
   };
 
+  const handleDeleteTrigger = async (id: string, keyword: string) => {
+    if (!confirm(`Are you sure you want to delete the "${keyword}" trigger?`)) return;
+
+    try {
+      const idToken = await shopify.idToken();
+      const response = await fetch(`${BACKEND_URL}/api/meta/triggers/${id}?shop=${shop}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${idToken}`,
+          "ngrok-skip-browser-warning": "true" 
+        }
+      });
+
+      if (response.ok) {
+        shopify.toast.show("Trigger deleted");
+        fetchDashboardData();
+      } else {
+        throw new Error("Delete failed");
+      }
+    } catch (err) {
+      console.error("Delete failed:", err);
+      shopify.toast.show("Failed to delete trigger", { isError: true });
+    }
+  };
+
   const toggleIsActive = async (id: string, currentStatus: boolean) => {
     try {
       const idToken = await shopify.idToken();
@@ -301,10 +326,21 @@ export default function Automation() {
                     return (
                       <div key={trigger.id} className="shopbox-template-card">
                         <div className="shopbox-template-header">
-                          <div className="shopbox-template-icon">{details.icon}</div>
-                          <span className="shopbox-template-title">
-                            {trigger.keyword.toUpperCase()} Message Template
-                          </span>
+                          <InlineStack align="space-between" blockAlign="center">
+                            <InlineStack gap="200" blockAlign="center">
+                              <div className="shopbox-template-icon">{details.icon}</div>
+                              <span className="shopbox-template-title">
+                                {trigger.keyword.toUpperCase()} Message Template
+                              </span>
+                            </InlineStack>
+                            <button 
+                              className="shopbox-delete-btn"
+                              onClick={() => handleDeleteTrigger(trigger.id, trigger.keyword)}
+                              title="Delete trigger"
+                            >
+                              ✕
+                            </button>
+                          </InlineStack>
                         </div>
                         <p className="shopbox-template-subtitle">{details.description}</p>
                         
