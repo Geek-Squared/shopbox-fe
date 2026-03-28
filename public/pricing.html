@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing Plans | Shopbox by Adberry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .pricing-hero { background: var(--sb-gradient-soft); padding: 120px 0 60px; text-align: center; }
+        .pricing-hero h1 { font-size: 56px; margin-bottom: 16px; }
+        .pricing-hero p { font-size: 20px; color: var(--sb-neutral); max-width: 600px; margin: 0 auto; }
+        
+        .pricing-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 30px; 
+            padding: 80px 0; 
+            max-width: 1100px; 
+            margin: 0 auto; 
+        }
+        
+        .pricing-card { 
+            background: white; 
+            border-radius: var(--sb-radius); 
+            border: 1px solid var(--sb-neutral-border); 
+            padding: 40px; 
+            display: flex; 
+            flex-direction: column; 
+            transition: var(--sb-transition);
+            position: relative;
+        }
+        
+        .pricing-card.popular { 
+            border-color: var(--sb-primary); 
+            box-shadow: var(--sb-shadow-hover); 
+            transform: scale(1.05);
+            z-index: 2;
+        }
+        
+        .pricing-card:hover { transform: translateY(-10px); box-shadow: var(--sb-shadow-hover); }
+        
+        .plan-name { font-size: 14px; font-weight: 700; text-transform: uppercase; color: var(--sb-neutral); margin-bottom: 12px; letter-spacing: 0.1em; }
+        .plan-price { font-size: 48px; font-weight: 800; color: var(--sb-text-dark); margin-bottom: 8px; }
+        .plan-price span { font-size: 16px; font-weight: 500; color: var(--sb-neutral); }
+        .plan-annual { font-size: 14px; color: var(--sb-primary); font-weight: 600; margin-bottom: 32px; }
+        
+        .features-list { margin-bottom: 40px; flex-grow: 1; }
+        .features-list li { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; font-size: 15px; color: var(--sb-text-body); }
+        .features-list i { color: var(--sb-primary); flex-shrink: 0; margin-top: 3px; }
+        
+        .trial-badge { 
+            background: var(--sb-neutral-light); 
+            color: var(--sb-neutral); 
+            padding: 12px; 
+            text-align: center; 
+            border-radius: 12px; 
+            font-size: 13px; 
+            font-weight: 600; 
+            margin-top: auto; 
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--sb-primary);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 991px) {
+            .pricing-grid { grid-template-columns: 1fr; padding: 40px 24px; }
+            .pricing-card.popular { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container nav-container">
+            <nav style="height: 80px; display: flex; justify-content: space-between; align-items: center;">
+                <div class="logo-wrapper" style="display: flex; align-items: center; gap: 10px;">
+                    <span class="logo-text" style="font-size: 24px; font-weight: 800; color: #008060; display: flex; flex-direction: column;">
+                        SHOPBOX <small style="display: block; font-size: 10px; font-weight: 500; color: #616161; text-transform: uppercase;">by Adberry</small>
+                    </span>
+                </div>
+                <div style="display: flex; gap: 30px; align-items: center;">
+                    <a href="/" class="nav-link" style="font-weight: 600; font-size: 15px;">Home</a>
+                    <a href="/documentation.html" class="nav-link" style="font-weight: 600; font-size: 15px;">How to Test</a>
+                    <a href="/" class="btn-primary">Get Started</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="pricing-hero">
+        <div class="container">
+            <h1>Simple, Transparent Pricing</h1>
+            <p>Choose the plan that's right for your growth. Scale your social sales with precision.</p>
+        </div>
+    </div>
+
+    <div class="pricing-grid container">
+        <!-- Free Plan -->
+        <div class="pricing-card">
+            <span class="plan-name">Free</span>
+            <div class="plan-price">Free</div>
+            <p style="margin-bottom: 40px; color: var(--sb-neutral); font-size: 14px;">Perfect for exploring possibilities.</p>
+            <ul class="features-list">
+                <li><i data-lucide="check" style="width: 18px; height: 18px;"></i> 1 channel (Instagram only)</li>
+                <li><i data-lucide="check" style="width: 18px; height: 18px;"></i> Up to 10 orders/month</li>
+                <li><i data-lucide="check" style="width: 18px; height: 18px;"></i> Shopbox branding on messages</li>
+            </ul>
+            <button class="btn-secondary" style="margin-top: 20px;">Install Free</button>
+        </div>
+
+        <!-- Starter Plan -->
+        <div class="pricing-card popular">
+            <div class="popular-badge">Best Value</div>
+            <span class="plan-name">Starter</span>
+            <div class="plan-price">$19.99 <span>/mo</span></div>
+            <div class="plan-annual">or $200 /year (save 17%)</div>
+            <ul class="features-list">
+                <li><i data-lucide="check" style="width: 18px; height: 18px;"></i> Instagram Comment Automation</li>
+                <li><i data-lucide="check" style="width: 18px; height: 18px;"></i> Instagram & Messenger DM Bot</li>
+                <li><i data-lucide="check" style="width: 18px; height: 18px;"></i> Post-to-Product Mapping</li>
+                <li><i data-lucide="check" style="width: 18px; height: 18px;"></i> Order Management Dashboard</li>
+                <li><i data-lucide="check" style="width: 18px; height: 18px;"></i> 14-day free trial</li>
+            </ul>
+            <button class="btn-primary" style="margin-top: 20px;">Start Starter Trial</button>
+            <div class="trial-badge">14-day free trial</div>
+        </div>
+
+        <!-- Pro Plan -->
+        <div class="pricing-card">
+            <span class="plan-name">Pro</span>
+            <div class="plan-price">$49.99 <span>/mo</span></div>
+            <div class="plan-annual">or $500 /year (save 17%)</div>
+            <ul class="features-list">
+                <li><i data-lucide="check" style="width: 18px; height: 18px;"></i> Everything in Starter</li>
+                <li><i data-lucide="check" style="width: 18px; height: 18px;"></i> WhatsApp Bot</li>
+                <li><i data-lucide="check" style="width: 18px; height: 18px;"></i> TikTok Integration (soon)</li>
+                <li><i data-lucide="check" style="width: 18px; height: 18px;"></i> Priority support</li>
+                <li><i data-lucide="check" style="width: 18px; height: 18px;"></i> 14-day free trial</li>
+            </ul>
+            <button class="btn-secondary" style="margin-top: 20px;">Start Pro Trial</button>
+            <div class="trial-badge">14-day free trial</div>
+        </div>
+    </div>
+
+    <div class="container" style="text-align: center; margin-bottom: 100px;">
+        <p style="color: var(--sb-neutral); font-size: 14px;">All charges are billed in USD. Recurring and usage-based charges are billed every 30 days.</p>
+    </div>
+
+    <footer style="padding: 60px 0; background: var(--sb-neutral-light); text-align: center;">
+        <div class="container">
+            <p style="color: var(--sb-neutral); font-size: 14px;">&copy; 2026 Shopbox by Adberry. All rights reserved. | <a href="/privacy.html">Privacy</a> | <a href="/terms.html">Terms</a></p>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
